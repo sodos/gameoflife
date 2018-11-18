@@ -44,44 +44,70 @@
 	<script type="text/javascript">
 
 
-	// unit = function(x,y,state){
-	// 	this.x = x;
-	// 	this.y = y;		
-	// 	this.state = state;
-	// }
-
-	// unit.prototype = {
-	// 	get_state: function() {
-	// 		return this.state;
-	// 	}		
-	// }
-	var generation = 0;
-	function first() {
-		makepatterns(getsize(),getsize());		
+	unit = function(x,y,state){
+		this.x = x;
+		this.y = y;		
+		this.state = state;
 	}
-	var state = ['dead','live'];
+
+	unit.prototype = {
+		get_state: function() {
+			return this.state;
+		}		
+	}
+
+	var generation = 0;
 	var height; var width;
-	function makepatterns(h,w) {
-		height = h;
-		width = w;
+	function first() {
+		height = getsize();
+		width = getsize();
+		makepatterns(height, width);		
+	}
+	var states = ['dead','live'];
+	var row; var column;	
+	function makepatterns(h,w) {	
 		var grid = $('#universe table');
 		// console.log(grid);
-		grid.html('');
-		var tr, td;		
-		for (i = 0; i < h; i++) { 
-			tr = $('<tr></tr>');
-			for (j = 0; j < w; j++) {
-				var cls = state[getstate()];
-				var ucls = 'u-' + i + '-' + j;
-				tr.append($('<td class="'+cls+' '+ucls+'"></td>'));
+		//@ declare the size of array
+		column = Array(w).join(".").split(".");;
+		row = Array(h).join(".").split(".");;		
+		
+		row.map(build_row);
+		var tmpcol = '';
+		//@ build row
+		function build_row(value, index_row, array) {
+			column.map(build_column);				    
+		    //@ build column
+		    function build_column(value, index_col, array) {
+		    	var state = states[getstate()];			
+				column[index_col] = "<td class='"+state+" u-"+index_row+"-"+index_col+"'></td>";
 			}
-			// console.log(tr);
-			grid.append(tr);
+			//@ build column string
+			tmpcol = column.join('');
+			//@ set final row
+			row[index_row] = "<tr class='row-"+index_row+"'>"+tmpcol+"</tr>";
 		}
+		
+		grid.html(row.join(''));
+		// console.log(row, column);
+		// row = row.map(build_row);
 
-		// checkall();		
+		// var table = [column,row];
+		// var tr, td;		
+		// for (i = 0; i < h; i++) { 
+		// 	tr = $('<tr></tr>');
+		// 	for (j = 0; j < w; j++) {
+		// 		var cls = state[getstate()];
+		// 		var ucls = 'u-' + i + '-' + j;
+		// 		tr.append($('<td class="'+cls+' '+ucls+'"></td>'));
+		// 	}
+		// 	// console.log(tr);
+		// 	grid.append(tr);
+		// }
+
+		// // checkall();		
 		window.setInterval(checkall, (gettime()*1000));
-	}	
+	}
 
 	function getstate() {
 		var ret = 0;
