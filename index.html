@@ -43,54 +43,80 @@
 	</div>
 	<script type="text/javascript">
 
-	// unit = function(x,y,state){
-	// 	this.x = x;
-	// 	this.y = y;		
-	// 	this.state = state;
-	// }
+	//@ declare a single unit / cell
+	unit = function(x,y,state){
+		this.x = x;
+		this.y = y;		
+		this.state = state;
+		this.html = "<td class='"+state+" u-"+x+"-"+y+"'></td>";
+	}
+	unit.prototype = {
+		get_state: function() {
+			return this.state;
+		},
+		get_html: function() {
+			return this.html;
+		}		
+	}
 
-	// unit.prototype = {
-	// 	get_state: function() {
-	// 		return this.state;
-	// 	}		
-	// }
+	//@ declare a row / sequnce of unit / cell 
+	unitrow = function(x, units, unithtml){
+		this.x = x;
+		this.units = units;		
+		this.html = "<tr class='row-"+x+"'>"+unithtml+"</tr>";
+	}
+	unitrow.prototype = {
+		get_rows: function() {
+			return this.units;
+		},
+		get_html: function() {
+			return this.html;
+		}
+	}
+	
 
-	var generation = 0;
-	var height; var width;
-	function first() {
-		height = getsize();
-		width = getsize();
-		makepatterns(height, width);		
+	var generation = 0;	
+	function first() {		
+		makepatterns(getrandsize(), getrandsize());		
 	}
 	var states = ['dead','live'];
-	var row; var column;	
+	var row; var column;
+	var tmpunits;var tmprows;
 	function makepatterns(h,w) {	
 		var grid = $('#universe table');
 		// console.log(grid);
+		//@ blank it
+		grid.html('');
+
 		//@ declare the size of array
-		column = Array(w).join(".").split(".");;
-		row = Array(h).join(".").split(".");;		
+		column = Array(w).join(".").split(".");
+		row = Array(h).join(".").split(".");	
 		
-		row.map(build_row);
-		var tmpcol = '';
+		tmpunits = [];	
+		tmprows = [];	
+
+		row.map(build_row);		
 		//@ build row
 		function build_row(value, index_row, array) {
-			column.map(build_column);				    
+			column.map(build_column);						
 		    //@ build column
 		    function build_column(value, index_col, array) {
-		    	var state = states[getstate()];			
-				column[index_col] = "<td class='"+state+" u-"+index_row+"-"+index_col+"'></td>";
+		    	var state = states[getstate()];
+		    	var tmp = new unit(index_row,index_col,state);				
+				tmpunits.push(tmp);
+				column[index_col] = tmp.get_html();
 			}
-			//@ build column string
-			tmpcol = column.join('');
-			//@ set final row
-			row[index_row] = "<tr class='row-"+index_row+"'>"+tmpcol+"</tr>";
+			var tmprowhtml = column.join('');
+			var tmprow = new unitrow(index_row,tmpunits,tmprowhtml);
+			tmprows.push(tmprow);
+			tmpunits = [];
+			grid.append(tmprow.get_html());			
 		}
 		
+		console.log(tmprows);
 		//@ build final grid
-		grid.html(row.join(''));
-
-		window.setInterval(checkall, (gettime()*500));
+		// grid.html(row.join(''));
+		// window.setInterval(checkall, (gettime()*500));
 	}
 
 	function getstate() {		
@@ -98,7 +124,7 @@
 		let ret = (number > 5) ? 1 : 0;
 		return ret;
 	}
-	function getsize() {		
+	function getrandsize() {		
 		return (10 + Math.floor(Math.random() * 6));
 	}
 	function gettime() {		
