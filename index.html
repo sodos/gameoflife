@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>game of life</title>
+	<meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+	<meta content="utf-8" http-equiv="encoding">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script> 
+</head>
+<style type="text/css">
+	#universe td.live {background-color: black;border: 1px solid #333;width: 20px;height: 20px;text-align: center;}
+	#universe td.dead {background-color: white;border: 1px solid #333;width: 20px;height: 20px;text-align: center;}
+	#universe td.overpopulation {border: 1px solid red !important;}
+	#universe td.underpopulation {border: 1px orange red !important;}
+	#universe td.reproduction {border: 1px solid green !important;}
+	#universe td.nextgeneration {border: 1px solid blue !important;}
+	table{margin: 5% auto;}
+	#generation{text-align: center;}
+</style>
+<body>	
+	<div class="container-fluid">
+		<div id="universe" class="col-md-12">
+			<table>
+				<tr>
+					<td class="live"></td>
+					<td class="live"></td>
+					<td class="live"></td>
+				</tr>
+				<tr>
+					<td class="live"></td>
+					<td class="dead"></td>
+					<td class="live"></td>
+				</tr>
+				<tr>
+					<td class="live"></td>
+					<td class="live"></td>
+					<td class="live"></td>
+				</tr>
+			</table>
+		</div>
+		<h3 id="generation">GENERATION : <span>0</span></h3>
+	</div>
+	<script type="text/javascript">
+
+
+	// unit = function(x,y,state){
+	// 	this.x = x;
+	// 	this.y = y;		
+	// 	this.state = state;
+	// }
+
+	// unit.prototype = {
+	// 	get_state: function() {
+	// 		return this.state;
+	// 	}		
+	// }
+	var generation = 0;
+	function first() {
+		makepatterns(getsize(),getsize());		
+	}
+	var state = ['dead','live'];
+	var height; var width;
+	function makepatterns(h,w) {
+		height = h;
+		width = w;
+		var grid = $('#universe table');
+		// console.log(grid);
+		grid.html('');
+		var tr, td;		
+		for (i = 0; i < h; i++) { 
+			tr = $('<tr></tr>');
+			for (j = 0; j < w; j++) {
+				var cls = state[getstate()];
+				var ucls = 'u-' + i + '-' + j;
+				tr.append($('<td class="'+cls+' '+ucls+'"></td>'));
+			}
+			// console.log(tr);
+			grid.append(tr);
+		}
+
+		// checkall();		
+		window.setInterval(checkall, (gettime()*1000));
+	}	
+
+	function getstate() {
+		var ret = 0;
+		var number = 1 + Math.floor(Math.random() * 6);
+		if(number > 5) ret = 1;
+		return ret;
+	}
+	function getsize() {		
+		return (10 + Math.floor(Math.random() * 6));
+	}
+	function gettime() {		
+		return (1 + Math.floor(Math.random() * 6));
+	}	
+	
+	function checkall() {
+		generation = generation + 1;
+		$('#generation span').html(generation);
+		$.each($('td'), function(i,td){
+			var str = $(td).attr('class');
+			var clss = str.split(' ');			
+			var arr = clss[1].split('-');
+			// var ut = new unit(arr[1],arr[2],clss[0]);
+			var n = [];
+			// console.log(arr[1],arr[2],clss[0]);
+			var livecount = 0;
+			for (i = -1; i < 2; i++) {
+				for (j = -1; j < 2; j++) {
+					// console.log((arr[1]+i),(arr[2]+j));
+					var xtmp = parseInt(parseInt(arr[1])+i);
+					var ytmp = parseInt(parseInt(arr[2])+j);
+					if(xtmp > -1 && ytmp > -1){
+						var final = 'u-'+xtmp+'-'+ytmp;						
+						var tmpstr = $('.'+final).attr('class');
+
+						if(tmpstr != undefined){
+							var tmpclss = tmpstr.split(' ');
+							if(tmpclss[0] == 'live') livecount = livecount + 1;
+							if($('.'+final).attr('class') != undefined)
+								n.push(tmpstr);
+						}
+					}					
+				}
+			}
+			//@ population logic
+			if(livecount > 3 && clss[0] == 'live'){				
+				$(td).removeClass().addClass('dead').addClass(clss[1]).addClass('overpopulation');
+				console.log(livecount, clss[0]);
+			}else if(livecount == 3 && clss[0] == 'dead'){
+				$(td).removeClass().addClass('live').addClass(clss[1]).addClass('reproduction');;
+				console.log(livecount, clss[0]);
+			}else if((livecount == 2 || livecount == 3) && clss[0] == 'live'){
+				$(td).removeClass().addClass('live').addClass(clss[1]).addClass('nextgeneration');;
+				console.log(livecount, clss[0]);
+			}else if(livecount < 2  && clss[0] == 'live'){
+				$(td).removeClass().addClass('dead').addClass(clss[1]).addClass('underpopulation');;
+				console.log(livecount, clss[0]);
+			}
+			// console.log(n);			
+		});
+	}	
+	
+	first();
+	// window.setInterval(first, (gettime()*3000));
+</script>
+</body>
+</html>
