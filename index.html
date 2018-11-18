@@ -43,18 +43,17 @@
 	</div>
 	<script type="text/javascript">
 
+	// unit = function(x,y,state){
+	// 	this.x = x;
+	// 	this.y = y;		
+	// 	this.state = state;
+	// }
 
-	unit = function(x,y,state){
-		this.x = x;
-		this.y = y;		
-		this.state = state;
-	}
-
-	unit.prototype = {
-		get_state: function() {
-			return this.state;
-		}		
-	}
+	// unit.prototype = {
+	// 	get_state: function() {
+	// 		return this.state;
+	// 	}		
+	// }
 
 	var generation = 0;
 	var height; var width;
@@ -88,31 +87,15 @@
 			row[index_row] = "<tr class='row-"+index_row+"'>"+tmpcol+"</tr>";
 		}
 		
+		//@ build final grid
 		grid.html(row.join(''));
-		// console.log(row, column);
-		// row = row.map(build_row);
 
-		// var table = [column,row];
-		// var tr, td;		
-		// for (i = 0; i < h; i++) { 
-		// 	tr = $('<tr></tr>');
-		// 	for (j = 0; j < w; j++) {
-		// 		var cls = state[getstate()];
-		// 		var ucls = 'u-' + i + '-' + j;
-		// 		tr.append($('<td class="'+cls+' '+ucls+'"></td>'));
-		// 	}
-		// 	// console.log(tr);
-		// 	grid.append(tr);
-		// }
-
-		// // checkall();		
-		window.setInterval(checkall, (gettime()*1000));
+		window.setInterval(checkall, (gettime()*500));
 	}
 
-	function getstate() {
-		var ret = 0;
+	function getstate() {		
 		var number = 1 + Math.floor(Math.random() * 6);
-		if(number > 5) ret = 1;
+		let ret = (number > 5) ? 1 : 0;
 		return ret;
 	}
 	function getsize() {		
