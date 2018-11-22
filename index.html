@@ -110,13 +110,15 @@
 			var tmprow = new unitrow(index_row,tmpunits,tmprowhtml);
 			tmprows.push(tmprow);
 			tmpunits = [];
+
+			//@ build html grid
 			grid.append(tmprow.get_html());			
 		}
 		
 		console.log(tmprows);
-		//@ build final grid
-		// grid.html(row.join(''));
-		window.setInterval(checkall, (gettime()*500));
+		
+		//@ running rule for generation to move 
+		//window.setInterval(checkall, (gettime()*500));
 	}
 
 	function getstate() {		
@@ -125,7 +127,7 @@
 		return ret;
 	}
 	function getrandsize() {		
-		return (10 + Math.floor(Math.random() * 6));
+		return (15 + Math.floor(Math.random() * 6));
 	}
 	function gettime() {		
 		return (1 + Math.floor(Math.random() * 6));
